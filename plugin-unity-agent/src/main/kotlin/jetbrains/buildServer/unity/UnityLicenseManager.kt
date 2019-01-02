@@ -1,5 +1,6 @@
 package jetbrains.buildServer.unity
 
+import com.github.zafarkhaja.semver.Version
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.SimpleCommandLineProcessRunner
@@ -31,7 +32,9 @@ class UnityLicenseManager(private val myUnityToolProvider: UnityToolProvider,
             }
 
             // Activate Unity license
-            val unityVersion = parameters[UnityConstants.PARAM_UNITY_VERSION]
+            val unityVersion = parameters[UnityConstants.PARAM_UNITY_VERSION]?.let {
+                Version.valueOf(it)
+            }
             try {
                 myActivateUnityLicensePath = myUnityToolProvider.getUnityPath(UnityConstants.RUNNER_TYPE, unityVersion)
             } catch (e: Exception) {

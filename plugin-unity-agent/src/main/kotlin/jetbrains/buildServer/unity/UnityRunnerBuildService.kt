@@ -7,6 +7,7 @@
 
 package jetbrains.buildServer.unity
 
+import com.github.zafarkhaja.semver.Version
 import com.intellij.openapi.util.SystemInfo
 import jetbrains.buildServer.agent.runner.BuildServiceAdapter
 import jetbrains.buildServer.agent.runner.ProgramCommandLine
@@ -18,14 +19,14 @@ import java.io.File
 /**
  * Unity runner service.
  */
-class UnityRunnerBuildService : BuildServiceAdapter() {
+class UnityRunnerBuildService(private val unityToolProvider: UnityToolProvider) : BuildServiceAdapter() {
 
     private var unityLogFile: File? = null
     private var unityTestsReportFile: File? = null
     private var unityLogFileTailer: Tailer? = null
 
     override fun makeProgramCommandLine(): ProgramCommandLine {
-        val toolPath = getToolPath(UnityConstants.RUNNER_TYPE)
+        val (version, toolPath) = unityToolProvider.getUnity(UnityConstants.RUNNER_TYPE, build, runnerContext)
         val arguments = mutableListOf("-batchmode")
 
         var projectDir = workingDirectory
@@ -77,13 +78,6 @@ class UnityRunnerBuildService : BuildServiceAdapter() {
             }
         }
 
-        val logFile = unityLogFile
-        if (logFile != null) {
-            arguments.addAll(listOf(ARG_LOG_FILE, logFile.absolutePath))
-        } else {
-            arguments.add(ARG_LOG_FILE)
-        }
-
         // -runEditorTests always executes -quit
         if (!arguments.contains(ARG_RUN_TESTS)) {
             arguments.add("-quit")
@@ -132,22 +126,16 @@ class UnityRunnerBuildService : BuildServiceAdapter() {
             }
         }
 
+        arguments.addAll(getLogArgument(version))
+
         return createProgramCommandline(toolPath, arguments)
     }
 
     override fun isCommandLineLoggingEnabled() = true
 
     override fun beforeProcessStarted() {
-        // On Windows unity could not write log into stdout
-        // so we need to read a log file contents
-        if (SystemInfo.isWindows) {
-            unityLogFile = File.createTempFile(
-                    "unityBuildLog-",
-                    "-${build.buildId}.txt",
-                    build.buildTempDirectory
-            )
-
-            unityLogFileTailer = Tailer.create(unityLogFile, object : TailerListenerAdapter() {
+        unityLogFile?.let { logFile ->
+            unityLogFileTailer = Tailer.create(logFile, object : TailerListenerAdapter() {
                 override fun handle(line: String) {
                     logger.message(line)
                 }
@@ -165,8 +153,25 @@ class UnityRunnerBuildService : BuildServiceAdapter() {
             Thread.sleep(DEFAULT_DELAY_MILLIS)
             stop()
         }
+
         unityTestsReportFile?.let {
             logger.message("##teamcity[importData type='nunit' path='${it.absolutePath}']")
+        }
+    }
+
+    private fun getLogArgument(version: Version) = sequence {
+        yield(ARG_LOG_FILE)
+
+        // On Windows unity could not write log into stdout, so we need to read a log file contents:
+        // https://issuetracker.unity3d.com/issues/command-line-logfile-with-no-parameters-outputs-to-screen-on-os-x-but-not-on-windows
+        if (SystemInfo.isWindows && version < UNITY_2019) {
+            unityLogFile = File.createTempFile(
+                    "unityBuildLog-",
+                    "-${build.buildId}.txt",
+                    build.buildTempDirectory
+            )?.apply {
+                yield(absolutePath)
+            }
         }
     }
 
@@ -175,5 +180,6 @@ class UnityRunnerBuildService : BuildServiceAdapter() {
         private const val ARG_LOG_FILE = "-logFile"
         private const val ARG_RUN_TESTS = "-runEditorTests"
         private const val ARG_TESTS_FILE = "-editorTestsResultFile"
+        private val UNITY_2019 = Version.forIntegers(2019)
     }
 }
