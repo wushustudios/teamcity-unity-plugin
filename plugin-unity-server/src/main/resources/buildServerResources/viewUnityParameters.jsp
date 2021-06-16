@@ -49,6 +49,12 @@
     </div>
 </c:if>
 
+<c:if test="${propertiesBean.properties[params.batchMode]}">
+    <div class="parameter">
+        Run in Batch Mode: <strong>ON</strong>
+    </div>
+</c:if>
+
 <c:if test="${propertiesBean.properties[params.noGraphics]}">
     <div class="parameter">
         Do not initialize the graphics device: <strong>ON</strong>

@@ -90,7 +90,7 @@ class UnityRunnerBuildService(
 
     override fun makeProgramCommandLine(): ProgramCommandLine {
         val (version, toolPath) = unityToolProvider.getUnity(UnityConstants.RUNNER_TYPE, build, runnerContext)
-        val arguments = mutableListOf("-batchmode")
+        val arguments = mutableListOf<String>()
 
         var projectPath = "./"
         parameters.value[UnityConstants.PARAM_PROJECT_PATH]?.let {
@@ -152,6 +152,14 @@ class UnityRunnerBuildService(
                 arguments.addAll(StringUtil.splitCommandArgumentsAndUnquote(it))
             }
         }
+
+        parameters.value[UnityConstants.PARAM_BATCH_MODE]?.let {
+            if (it.toBoolean()) {
+                arguments.add("-batchmode")
+            }
+        }
+
+
 
         appendRunTestsArguments(arguments)
 

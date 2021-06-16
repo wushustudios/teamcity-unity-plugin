@@ -88,4 +88,7 @@ class UnityParametersProvider {
 
     val verbosityValues: List<Verbosity>
         get() = Verbosity.values().toList()
+
+    val batchMode: String
+        get() = UnityConstants.PARAM_BATCH_MODE    
 }
