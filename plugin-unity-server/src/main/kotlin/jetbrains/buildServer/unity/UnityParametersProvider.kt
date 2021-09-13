@@ -91,4 +91,7 @@ class UnityParametersProvider {
 
     val batchMode: String
         get() = UnityConstants.PARAM_BATCH_MODE    
+        
+    val quit: String
+        get() = UnityConstants.PARAM_QUIT
 }

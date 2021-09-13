@@ -153,9 +153,9 @@ class UnityRunnerBuildService(
             }
         }
 
-        parameters.value[UnityConstants.PARAM_BATCH_MODE]?.let {
+        parameters.value[UnityConstants.PARAM_QUIT]?.let {
             if (it.toBoolean()) {
-                arguments.add("-batchmode")
+                arguments.add("-quit")
             }
         }
 
@@ -200,7 +200,7 @@ class UnityRunnerBuildService(
                     arguments.addAll(listOf(ARG_RUN_TESTS, "-testPlatform", testPlatform))
                 }
             } else {
-                arguments.add("-quit")
+             //   arguments.add("-quit")
                 return
             }
         }

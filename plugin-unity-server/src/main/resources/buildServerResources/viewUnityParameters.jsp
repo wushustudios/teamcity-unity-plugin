@@ -49,6 +49,12 @@
     </div>
 </c:if>
 
+<c:if test="${propertiesBean.properties[params.quit]}">
+    <div class="parameter">
+        Automatic Quit: <strong>ON</strong>
+    </div>
+</c:if>
+
 <c:if test="${propertiesBean.properties[params.batchMode]}">
     <div class="parameter">
         Run in Batch Mode: <strong>ON</strong>

@@ -149,6 +149,10 @@
 <tr class="advancedSetting">
     <th>Options:</th>
     <td>
+        <props:checkboxProperty name="${params.quit}"/>
+        <label for="${params.quit}">Automatically Close Unity</label><br/>
+        <props:checkboxProperty name="${params.batchMode}"/>
+        <label for="${params.batchMode}">Run in Batch Mode</label><br/>
         <props:checkboxProperty name="${params.noGraphics}"/>
         <label for="${params.noGraphics}">Do not initialize the graphics device</label><br/>
         <props:checkboxProperty name="${params.silentCrashes}"/>
