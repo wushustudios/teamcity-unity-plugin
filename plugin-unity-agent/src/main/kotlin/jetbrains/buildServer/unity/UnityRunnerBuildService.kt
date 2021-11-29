@@ -92,6 +92,12 @@ class UnityRunnerBuildService(
         val (version, toolPath) = unityToolProvider.getUnity(UnityConstants.RUNNER_TYPE, build, runnerContext)
         val arguments = mutableListOf<String>()
 
+        parameters.value[UnityConstants.PARAM_BATCH_MODE]?.let {
+            if (it.toBoolean()) {
+                arguments.add("-batchmode")
+            }
+        }
+        
         var projectPath = "./"
         parameters.value[UnityConstants.PARAM_PROJECT_PATH]?.let {
             if (it.isNotEmpty()) {
