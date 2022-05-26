@@ -22,12 +22,12 @@ import jetbrains.buildServer.agent.Constants
  * Cargo runner constants.
  */
 object UnityConstants {
-    const val RUNNER_TYPE = "unity"
-    const val RUNNER_DISPLAY_NAME = "Unity"
+    const val RUNNER_TYPE = "unity_wushu"
+    const val RUNNER_DISPLAY_NAME = "Unity by Wushu"
     const val RUNNER_DESCRIPTION = "Provides build support for Unity projects"
     const val BUILD_FEATURE_TYPE = "UnityBuildFeature"
     const val BUILD_FEATURE_DISPLAY_NAME = "Unity build settings"
-    const val UNITY_CONFIG_NAME = "$RUNNER_TYPE.path."
+    const val UNITY_CONFIG_NAME = "unity.path."
 
     const val PARAM_PROJECT_PATH = "projectPath"
     const val PARAM_EXECUTE_METHOD = "executeMethod"
